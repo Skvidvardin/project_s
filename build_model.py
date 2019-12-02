@@ -1,9 +1,11 @@
 import torch
 import numpy as np
-from torch import nn
+import math
 from lstm_encoder import LSTMEncoder
 from kuma_gate import KumaGate
 
+from torch.nn.init import _calculate_fan_in_and_fan_out
+from torch import nn
 
 def get_z_stats(z=None, mask=None):
     """
@@ -395,6 +397,36 @@ class LatentRationaleModel(nn.Module):
             optional["selected"] = 1 - optional["p0"]
 
         return loss, optional
+
+
+def xavier_uniform_n_(w, gain=1., n=4):
+    """
+    Xavier initializer for parameters that combine multiple matrices in one
+    parameter for efficiency. This is e.g. used for GRU and LSTM parameters,
+    where e.g. all gates are computed at the same time by 1 big matrix.
+    :param w:
+    :param gain:
+    :param n:
+    :return:
+    """
+    with torch.no_grad():
+        fan_in, fan_out = _calculate_fan_in_and_fan_out(w)
+        assert fan_out % n == 0, "fan_out should be divisible by n"
+        fan_out = fan_out // n
+        std = gain * math.sqrt(2.0 / (fan_in + fan_out))
+        a = math.sqrt(3.0) * std
+        nn.init.uniform_(w, -a, a)
+
+
+def initialize_model_(model):
+
+    for name, p in model.named_parameters():
+        if "lstm" in name and len(p.shape) > 1:
+            xavier_uniform_n_(p)
+        elif len(p.shape) > 1:
+            torch.nn.init.xavier_uniform_(p)
+        elif "bias" in name:
+            torch.nn.init.constant_(p, 0.)
 
 
 def build_model(vocab, t2i):

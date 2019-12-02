@@ -6,10 +6,10 @@ import torch.optim
 from torch.optim import Adam
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
-# from vocab import Vocabulary, load_glove
-# from build_model import build_model
-# from reader_batcher import sst_reader, prepare_minibatch, get_minibatch
-# from evaluater import evaluate
+from vocab import Vocabulary, load_glove
+from build_model import build_model, initialize_model_
+from reader_batcher import sst_reader, prepare_minibatch, get_minibatch
+from evaluater import evaluate
 
 
 if torch.cuda.is_available():
@@ -49,6 +49,7 @@ def train():
 
     # Build model
     model = build_model(vocabulary, t2i)
+    initialize_model_(model)  # интересно, но без инициализации модель не сойдется
 
     with torch.no_grad():
         model.embed.weight.data.copy_(torch.from_numpy(glove))
