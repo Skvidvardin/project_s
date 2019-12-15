@@ -7,6 +7,7 @@ from kuma_gate import KumaGate
 from torch.nn.init import _calculate_fan_in_and_fan_out
 from torch import nn
 
+
 def get_z_stats(z=None, mask=None):
     """
     Computes statistics about how many zs are

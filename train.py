@@ -37,19 +37,19 @@ def train():
     
     ################
     
-    train_data = list(sst_reader("../../data/sst/train.txt"))
-    dev_data = list(sst_reader("../../data/sst/dev.txt"))
-    test_data = list(sst_reader("../../data/sst/test.txt"))
+    train_data = list(sst_reader("data/sst/train.txt"))
+    dev_data = list(sst_reader("data/sst/dev.txt"))
+    test_data = list(sst_reader("data/sst/test.txt"))
 
     iters_per_epoch = len(train_data) // batch_size
 
     vocabulary = Vocabulary()
-    glove = load_glove('../../data/sst/glove.840B.300d.sst.txt', vocabulary)
+    glove = load_glove('data/sst/glove.840B.300d.sst.txt', vocabulary)
     t2i = OrderedDict({p: i for p, i in zip(["very negative", "negative", "neutral", "positive", "very positive"], range(5))})
 
     # Build model
     model = build_model(vocabulary, t2i)
-    initialize_model_(model)  # интересно, но без инициализации модель не сойдется
+    initialize_model_(model)
 
     with torch.no_grad():
         model.embed.weight.data.copy_(torch.from_numpy(glove))

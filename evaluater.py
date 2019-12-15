@@ -29,7 +29,6 @@ def get_z_stats(z=None, mask=None):
     return num_0, num_c, num_1, mask_total
 
 
-
 def get_histogram_counts(z=None, mask=None, mb=None):
     counts = np.zeros(5).astype(np.int64)
 
